@@ -1,6 +1,9 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+)
 
 func main() {
 	app := fiber.New(
@@ -11,14 +14,19 @@ func main() {
 			EnablePrintRoutes: true,
 		},
 	)
+	app.Use(logger.New())
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	app.Get(
+		"/", func(c *fiber.Ctx) error {
+			return c.SendString("Hello, World!")
+		},
+	)
 
-	app.Get("/status", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"status": "alive"})
-	})
+	app.Get(
+		"/status", func(c *fiber.Ctx) error {
+			return c.JSON(fiber.Map{"status": "alive"})
+		},
+	)
 
-	app.Listen(":3000")
+	app.Listen(":80")
 }
