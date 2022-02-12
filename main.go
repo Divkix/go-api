@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 )
 
 func main() {
@@ -14,7 +16,19 @@ func main() {
 			EnablePrintRoutes: true,
 		},
 	)
+
 	app.Use(logger.New())
+	app.Use(
+		basicauth.New(
+			basicauth.Config{
+				Users: map[string]string{
+					"admin": "admin",
+				},
+				Realm: "Forbidden",
+			},
+		),
+	)
+	app.Get("/dashboard", monitor.New())
 
 	app.Get(
 		"/", func(c *fiber.Ctx) error {
