@@ -9,6 +9,7 @@ package fiber
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
@@ -38,7 +39,7 @@ import (
 )
 
 // Version of current fiber package
-const Version = "2.34.0"
+const Version = "2.34.1"
 
 // Handler defines a function to serve HTTP requests.
 type Handler = func(*Ctx) error
@@ -973,6 +974,11 @@ func (app *App) Test(req *http.Request, msTimeout ...int) (resp *http.Response, 
 	if err != nil {
 		return nil, err
 	}
+
+	// adding back the query from URL, since dump cleans it
+	dumps := bytes.Split(dump, []byte(" "))
+	dumps[1] = []byte(req.URL.String())
+	dump = bytes.Join(dumps, []byte(" "))
 
 	// Create test connection
 	conn := new(testConn)
